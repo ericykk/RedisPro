@@ -47,9 +47,9 @@ public class MethodCacheInterceptor implements MethodInterceptor{
         Object [] arguments = invocation.getArguments();
         //获取缓存key
         String key = getCacheKey(targetName,methodName,arguments);
-
         if(redisDistributedService.hasKey(key)){
-            return redisDistributedService.get(key);
+            //根据返回值类型返回值
+            return redisDistributedService.get(key,method.getReturnType());
         }
         try {
             value = invocation.proceed();
@@ -78,19 +78,18 @@ public class MethodCacheInterceptor implements MethodInterceptor{
     /**
      * 生成缓存key
      *
-     * @param targetName
-     * @param methodName
-     * @param arguments
+     * @param targetName 类型名 包含整个包名
+     * @param methodName 方法名称
+     * @param arguments 参数
      */
-    private String getCacheKey(String targetName, String methodName,
-                               Object[] arguments) {
-        StringBuffer sbu = new StringBuffer();
-        sbu.append(targetName).append("_").append(methodName);
+    private String getCacheKey(String targetName, String methodName, Object[] arguments) {
+        StringBuffer cacheKey = new StringBuffer();
+        cacheKey.append(targetName).append("_").append(methodName);
         if ((arguments != null) && (arguments.length != 0)) {
             for (int i = 0; i < arguments.length; i++) {
-                sbu.append("_").append(arguments[i]);
+                cacheKey.append("_").append(arguments[i]);
             }
         }
-        return sbu.toString();
+        return cacheKey.toString();
     }
 }

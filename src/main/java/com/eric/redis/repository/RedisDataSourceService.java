@@ -8,7 +8,7 @@ import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
 /**
- * description:统一管理redis资源服务
+ * description:redis分布式连接池资源服务
  * author:Eric
  * Date:16/9/27
  * Time:15:25
@@ -22,6 +22,12 @@ public class RedisDataSourceService implements  RedisDataSource{
     @Autowired
     private ShardedJedisPool shardedJedisPool;
 
+
+    /**
+     * 获取分片redis服务
+     * 如果连接池中有一台redis服务宕机 则无法获取服务
+     * @return
+     */
     @Override
     public ShardedJedis getRedisClient() {
         ShardedJedis shardedJedis = null;
@@ -29,7 +35,10 @@ public class RedisDataSourceService implements  RedisDataSource{
             shardedJedis = shardedJedisPool.getResource();
             return shardedJedis;
         }catch (Exception e){
-            logger.error("get redis resource fail,the reason is"+e.getMessage());
+            logger.error("get redis resource fail,the reason is "+e.getMessage());
+            if(shardedJedis != null){
+                shardedJedis.close();
+            }
         }
         return shardedJedis;
     }
@@ -38,4 +47,5 @@ public class RedisDataSourceService implements  RedisDataSource{
     public void returnResource(ShardedJedis shardedJedis) {
             shardedJedis.close();
     }
+
 }

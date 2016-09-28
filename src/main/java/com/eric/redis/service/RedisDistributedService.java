@@ -1,7 +1,7 @@
 package com.eric.redis.service;
 
 import com.alibaba.fastjson.JSON;
-import com.eric.redis.repository.RedisDataSourceService;
+import com.eric.redis.repository.RedisDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.ShardedJedis;
 
 /**
- * description:redis分布式服务
+ * description:redis分片服务
  * author:Eric
  * Date:16/9/23
  * Time:18:20
@@ -21,7 +21,7 @@ public class RedisDistributedService {
     private Logger logger = LogManager.getLogger(RedisDistributedService.class);
 
     @Autowired
-    private RedisDataSourceService redisDataSourceService;
+    private RedisDataSource redisDataSource;
 
 
     /**
@@ -32,7 +32,7 @@ public class RedisDistributedService {
      */
     public String set(String key,Object value){
         String result = null;
-        ShardedJedis shardedJedis = redisDataSourceService.getRedisClient();
+        ShardedJedis shardedJedis = redisDataSource.getRedisClient();
         if(shardedJedis != null){
             try{
                 String jsonValue = JSON.toJSONString(value);
@@ -55,7 +55,7 @@ public class RedisDistributedService {
      */
     public String set(String key,Object value,int expireTime){
         String result = null;
-        ShardedJedis shardedJedis = redisDataSourceService.getRedisClient();
+        ShardedJedis shardedJedis = redisDataSource.getRedisClient();
         if(shardedJedis != null){
             try{
                 String jsonValue = JSON.toJSONString(value);
@@ -76,7 +76,7 @@ public class RedisDistributedService {
      */
     public String get(String key){
         String result = null;
-        ShardedJedis shardedJedis = redisDataSourceService.getRedisClient();
+        ShardedJedis shardedJedis = redisDataSource.getRedisClient();
         if(shardedJedis != null){
             try{
                 result = shardedJedis.get(key);
@@ -97,7 +97,7 @@ public class RedisDistributedService {
      */
     public boolean hasKey(String key){
         boolean hasKey = false;
-        ShardedJedis shardedJedis = redisDataSourceService.getRedisClient();
+        ShardedJedis shardedJedis = redisDataSource.getRedisClient();
         if(shardedJedis != null){
             try{
                 hasKey = shardedJedis.exists(key);
@@ -117,7 +117,7 @@ public class RedisDistributedService {
      */
     public boolean del(String key){
         boolean result = false;
-        ShardedJedis shardedJedis = redisDataSourceService.getRedisClient();
+        ShardedJedis shardedJedis = redisDataSource.getRedisClient();
         if(shardedJedis != null){
             try{
                 shardedJedis.del(key);
@@ -139,7 +139,7 @@ public class RedisDistributedService {
      * @return
      */
     public <T> T get(String key,Class<T> clazz){
-        ShardedJedis shardedJedis = redisDataSourceService.getRedisClient();
+        ShardedJedis shardedJedis = redisDataSource.getRedisClient();
         if(shardedJedis != null){
             try{
                 String value = shardedJedis.get(key);
