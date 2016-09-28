@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
+       default-autowire="byName" default-lazy-init="true">
+
+    <aop:config proxy-target-class="true"/>
+
+    <!-- 数据源配置 根据实际需求配置-->
+    <bean id="dataSource_util" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${${env}.generalPro.jdbc.driver}"/>
+        <property name="url" value="${${env}.generalPro.jdbc.url}"/>
+        <property name="username" value="${${env}.generalPro.jdbc.username}"/>
+        <property name="password" value="${${env}.generalPro.jdbc.password}"/>
+        <!-- 初始化连接大小 -->
+        <property name="initialSize" value="5"/>
+        <!-- 连接池最大使用连接数量 -->
+        <property name="maxActive" value="50"/>
+        <!-- 连接池最大空闲 -->
+        <property name="maxIdle" value="2"/>
+        <!-- 连接池最小空闲 -->
+        <property name="minIdle" value="1"/>
+        <!--验证连接是否有效-->
+        <property name="validationQuery" value="SELECT 1"/>
+        <property name="testOnBorrow" value="true"/>
+        <property name="testOnReturn" value="false"/>
+        <property name="testWhileIdle" value="true"/>
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="30000"/>
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="numTestsPerEvictionRun" value="300"/>
+
+        <property name="defaultAutoCommit" value="true"/>
+    </bean>
+
+    <!-- 配置事务 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" p:dataSource-ref="dataSource_util"/>
+
+    <!-- 配置基于注解的事物aop -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- 配置sqlSessionFactory -->
+    <bean id="utilSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 实例化sqlSessionFactory时需要使用上述配置好的数据源以及SQL映射文件 -->
+        <property name="dataSource" ref="dataSource_util" />
+        <!-- 主配置文件 -->
+        <property name="configLocation" value="classpath:spring/mybatis-config.xml"></property>
+        <!-- 自动扫描sqlmap目录下的所有SQL映射的xml文件 -->
+        <property name="mapperLocations" value="classpath:sqlmap/*.xml" />
+        <!-- 自动注册javabean别名 默认会使用javabean的首字母小写的非限定类名来作为它的别名-->
+        <property name="typeAliasesPackage" value="com.eric.redis.model"/>
+    </bean>
+
+    <!-- 配置扫描器 采用mybatis接口形式访问映射文件 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 扫描基本包路径下的所有映射器接口类 采用分号或者逗号分隔 可设置多个包路径 -->
+        <property name="basePackage" value="com.eric.redis.dao" />
+        <!--多个数据源 可设置具体的sqlSessionFactoryBean 单个数据源不必配置-->
+        <property name="sqlSessionFactoryBeanName" value="utilSqlSessionFactory" />
+    </bean>
+
+    <!--配置jdbc模板 采用mybatis接口模式映射 不用配置-->
+    <bean id="sqlSession" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource">
+            <ref bean="dataSource_util"/>
+        </property>
+    </bean>
+
+</beans>
