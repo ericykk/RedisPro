@@ -16,9 +16,9 @@ import redis.clients.jedis.ShardedJedis;
  * version 1.0.0
  */
 @Service
-public class RedisDistributedService {
+public class RedisShardedService {
 
-    private Logger logger = LogManager.getLogger(RedisDistributedService.class);
+    private Logger logger = LogManager.getLogger(RedisShardedService.class);
 
     @Autowired
     private RedisDataSource redisDataSource;

@@ -46,6 +46,8 @@
 
     <!--引入外部文件-->
     <import resource="dataSourceConfig.xml"/>
-    <import resource="applicationContext-redis.xml"/>
+    <!--<import resource="applicationContext-single-redis.xml"/>-->
+    <!--<import resource="applicationContext-sharded-redis.xml"/>-->
+    <import resource="applicationContext-cluster-redis.xml"/>
 
 </beans>

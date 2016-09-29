@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+    <!-- redis连接池配置 -->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <!-- pool可以有多少个jedis实例 -->
+        <property name="maxTotal" value="${redis.maxTotal}" />
+        <!-- 最大能够闲置的jedis实例  -->
+        <property name="maxIdle" value="${redis.maxIdle}" />
+        <!--最大等待wait时间-->
+        <property name="maxWaitMillis" value="${redis.maxWaitMillis}"/>
+        <!-- 获得一个jedis实例的时候是否检查连接可用性（ping() -->
+        <property name="testOnBorrow" value="${redis.testOnBorrow}" />
+        <!-- return 一个jedis实例给pool时，是否检查连接可用性（ping()） -->
+        <property name="testOnReturn" value="${redis.testOnReturn}" />
+    </bean>
+
+    <!--redis分片连接池 轻量级的集群实现-->
+    <bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool" scope="singleton">
+        <constructor-arg name="poolConfig" ref="jedisPoolConfig"/>
+        <constructor-arg name="shards">
+            <list>
+                <bean id="master" class="redis.clients.jedis.JedisShardInfo">
+                    <constructor-arg name="host" value="${redis.host}"/>
+                    <constructor-arg name="port" value="${redis.port}"/>
+                    <constructor-arg name="timeout" value="${redis.timeout}"/>
+                </bean>
+                <bean id="slaveOne" class="redis.clients.jedis.JedisShardInfo">
+                    <constructor-arg name="host" value="${redis.host}"/>
+                    <constructor-arg name="port" value="${redis.port1}"/>
+                    <constructor-arg name="timeout" value="${redis.timeout}"/>
+                </bean>
+                <bean id="slaveTwo" class="redis.clients.jedis.JedisShardInfo">
+                    <constructor-arg name="host" value="${redis.host}"/>
+                    <constructor-arg name="port" value="${redis.port2}"/>
+                    <constructor-arg name="timeout" value="${redis.timeout}"/>
+                </bean>
+                <bean id="slaveThree" class="redis.clients.jedis.JedisShardInfo">
+                    <constructor-arg name="host" value="${redis.host}"/>
+                    <constructor-arg name="port" value="${redis.port3}"/>
+                    <constructor-arg name="timeout" value="${redis.timeout}"/>
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <!-- session共享配置 将session放入redis -->
+    <!--<bean id="redisHttpSessionConfiguration" class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">-->
+        <!--&lt;!&ndash;session过期时间&ndash;&gt;-->
+        <!--<property name="maxInactiveIntervalInSeconds" value="1800" />-->
+    <!--</bean>-->
+
+    <!--redis缓存拦截器配置start-->
+    <bean id="methodCacheInterceptor" class="com.eric.redis.configuration.interceptor.MethodCacheInterceptor"/>
+    <aop:config>
+        <!--切入点 这里表示定义在redis.controller包下的任意方法的执行-->
+        <aop:pointcut id="methodPoint" expression="execution(* com.eric.redis.controller.*.*(..))"/>
+        <!--使用缓存拦截器-->
+        <aop:advisor advice-ref="methodCacheInterceptor" pointcut-ref="methodPoint"/>
+    </aop:config>
+    <!--redis缓存拦截器配置end-->
+
+</beans>

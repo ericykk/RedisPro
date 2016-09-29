@@ -15,9 +15,9 @@ import redis.clients.jedis.ShardedJedisPool;
  * version 1.0.0
  */
 @Repository
-public class RedisDataSourceService implements  RedisDataSource{
+public class RedisShardedSource implements  RedisDataSource{
 
-    private Logger logger = LogManager.getLogger(RedisDataSourceService.class);
+    private Logger logger = LogManager.getLogger(RedisShardedSource.class);
 
     @Autowired
     private ShardedJedisPool shardedJedisPool;

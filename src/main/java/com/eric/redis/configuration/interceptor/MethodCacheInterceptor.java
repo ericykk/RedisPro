@@ -1,7 +1,7 @@
 package com.eric.redis.configuration.interceptor;
 
 import com.eric.redis.configuration.annotation.RedisCache;
-import com.eric.redis.service.RedisDistributedService;
+import com.eric.redis.service.RedisShardedService;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
 public class MethodCacheInterceptor implements MethodInterceptor{
 
     @Autowired
-    private RedisDistributedService redisDistributedService;
+    private RedisShardedService redisShardedService;
 
     /**
      * redis和数据库同步
@@ -47,9 +47,9 @@ public class MethodCacheInterceptor implements MethodInterceptor{
         Object [] arguments = invocation.getArguments();
         //获取缓存key
         String key = getCacheKey(targetName,methodName,arguments);
-        if(redisDistributedService.hasKey(key)){
+        if(redisShardedService.hasKey(key)){
             //根据返回值类型返回值
-            return redisDistributedService.get(key,method.getReturnType());
+            return redisShardedService.get(key,method.getReturnType());
         }
         try {
             value = invocation.proceed();
@@ -60,7 +60,7 @@ public class MethodCacheInterceptor implements MethodInterceptor{
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        redisDistributedService.set(cacheKey,cacheValue,redisCache.expireTime());
+                        redisShardedService.set(cacheKey,cacheValue,redisCache.expireTime());
                     }
                 }).start();
             }
