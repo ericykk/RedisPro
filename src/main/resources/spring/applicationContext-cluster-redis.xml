@@ -24,20 +24,28 @@
         <property name="clusterNodes">
             <set>
                 <bean id="redisNode" class="org.springframework.data.redis.connection.RedisNode">
-                    <constructor-arg name="host" value="${redis.host}"/>
-                    <constructor-arg name="port" value="${redis.port}"/>
+                    <constructor-arg name="host" value="${redis.cluster.host}"/>
+                    <constructor-arg name="port" value="${redis.cluster.port}"/>
                 </bean>
                 <bean id="redisNodeOne" class="org.springframework.data.redis.connection.RedisNode">
-                    <constructor-arg name="host" value="${redis.host}"/>
-                    <constructor-arg name="port" value="${redis.port1}"/>
+                    <constructor-arg name="host" value="${redis.cluster.host}"/>
+                    <constructor-arg name="port" value="${redis.cluster.port1}"/>
                 </bean>
                 <bean id="redisNodeTwo" class="org.springframework.data.redis.connection.RedisNode">
-                    <constructor-arg name="host" value="${redis.host}"/>
-                    <constructor-arg name="port" value="${redis.port2}"/>
+                    <constructor-arg name="host" value="${redis.cluster.host}"/>
+                    <constructor-arg name="port" value="${redis.cluster.port2}"/>
                 </bean>
                 <bean id="redisNodeThree" class="org.springframework.data.redis.connection.RedisNode">
-                    <constructor-arg name="host" value="${redis.host}"/>
-                    <constructor-arg name="port" value="${redis.port3}"/>
+                    <constructor-arg name="host" value="${redis.cluster.host}"/>
+                    <constructor-arg name="port" value="${redis.cluster.port3}"/>
+                </bean>
+                <bean id="redisNodeFour" class="org.springframework.data.redis.connection.RedisNode">
+                    <constructor-arg name="host" value="${redis.cluster.host}"/>
+                    <constructor-arg name="port" value="${redis.cluster.port4}"/>
+                </bean>
+                <bean id="redisNodeFive" class="org.springframework.data.redis.connection.RedisNode">
+                    <constructor-arg name="host" value="${redis.cluster.host}"/>
+                    <constructor-arg name="port" value="${redis.cluster.port5}"/>
                 </bean>
             </set>
         </property>

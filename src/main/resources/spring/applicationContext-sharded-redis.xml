@@ -49,12 +49,6 @@
         </constructor-arg>
     </bean>
 
-    <!-- session共享配置 将session放入redis -->
-    <!--<bean id="redisHttpSessionConfiguration" class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">-->
-        <!--&lt;!&ndash;session过期时间&ndash;&gt;-->
-        <!--<property name="maxInactiveIntervalInSeconds" value="1800" />-->
-    <!--</bean>-->
-
     <!--redis缓存拦截器配置start-->
     <bean id="methodCacheInterceptor" class="com.eric.redis.configuration.interceptor.MethodCacheInterceptor"/>
     <aop:config>
