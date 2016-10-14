@@ -17,18 +17,18 @@ public class RedisTemplateTest extends BaseTest{
     @Autowired
     private RedisTemplateService redisTemplateService;
 
-
+    @Ignore
     @Test
     public void setTest(){
-        for(int i=0; i<1000;i++){
+        for(int i=0; i<10000;i++){
             redisTemplateService.set("redisTemplate"+i,"Hello World!");
         }
     }
 
-    @Ignore
+
     @Test
     public void getTest(){
-        for(int i=0; i<1000;i++){
+        for(int i=0; i<10000;i++){
             Object result = redisTemplateService.get("redisTemplate"+i);
             Assert.assertEquals("Hello World!",result);
         }
