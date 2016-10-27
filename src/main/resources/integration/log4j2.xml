@@ -30,7 +30,7 @@
 
     <loggers>
         <!--打印sql-->
-        <logger name="com.eric.redis.dao" level="debug" additivity="false">
+        <logger name="com.eric.redis.dao" level="info" additivity="false">
             <appender-ref ref="STDOUT"/>
         </logger>
         <!--默认的root的logger-->
